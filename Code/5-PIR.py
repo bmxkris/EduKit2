@@ -4,6 +4,7 @@
 # Import Python header files
 import RPi.GPIO as GPIO
 import time
+import datetime
 
 # Set the GPIO naming convention
 GPIO.setmode(GPIO.BCM)
@@ -21,10 +22,13 @@ GPIO.setup(PinPIR, GPIO.IN)
 Current_State  = 0
 Previous_State = 0
 
+file = open("movementlog.txt","a")
+
 try:
     print("Waiting for PIR to settle ...")
     # Loop until PIR output is 0
     while GPIO.input(PinPIR) == 1:
+        #print("input is:" + str(GPIO.input(PinPIR)));
         Current_State = 0
 
     print("    Ready")
@@ -35,7 +39,9 @@ try:
 
         # If the PIR is triggered
         if Current_State == 1 and Previous_State == 0:
-            print("    Motion detected!")
+            #print("    Motion detected!")
+	    file.write("Motion detected: " + str(datetime.datetime.now()) + "\n") 
+	    print("Motion detected: " + str(datetime.datetime.now()) ) 
             # Record previous state
             Previous_State = 1
         # If the PIR has returned to ready state
@@ -51,3 +57,4 @@ except KeyboardInterrupt:
 
     # Reset GPIO settings
     GPIO.cleanup()
+    file.close()
